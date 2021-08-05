@@ -45,9 +45,10 @@ contract NFTMarketplace {
 
   function fillOffer(uint _offerId) public payable {
     _Offer storage _offer = offers[_offerId];
-    require(_offer.offerId == _offerId); // the offer must exist
+    require(_offer.offerId == _offerId, 'The offer must exist');
+    require(_offer.user != msg.sender, 'The owner of the offer cannot fill it');
     require(!_offer.fulfilled, 'An offer cannot be fulfilled twice');
-    require(!_offer.cancelled, 'Only non-cancelled offers can be executed');
+    require(!_offer.cancelled, 'A cancelled offer cannot be fulfilled');
     require(msg.value == _offer.price, 'The ETH amount should match with the NFT Price');
     nftCollection.transferFrom(address(this), msg.sender, _offer.id);
     _offer.fulfilled = true;
@@ -57,9 +58,9 @@ contract NFTMarketplace {
 
   function cancelOffer(uint _offerId) public {
     _Offer storage _offer = offers[_offerId];
-    require(_offer.offerId == _offerId); // the offer must exist
+    require(_offer.offerId == _offerId, 'The offer must exist');
     require(_offer.user == msg.sender, 'The offer can only be canceled by the owner');
-    require(_offer.fulfilled == false, 'Only non-fulfilled orders can be cancelled');
+    require(_offer.fulfilled == false, 'A fulfilled offer cannot be cancelled');
     require(_offer.cancelled == false, 'An offer cannot be cancelled twice');
     _offer.cancelled = true;
     emit OfferCancelled(_offerId);
