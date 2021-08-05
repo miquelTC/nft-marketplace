@@ -9,7 +9,7 @@ contract('NFTCollection', (accounts) => {
     contract = await NFTCollection.new();
   });
 
-  describe('deployment', async () => {
+  describe('deployment', () => {
     it('deploys successfully', async () => {
       const address = contract.address;
       assert.notEqual(address, 0x0);
@@ -18,55 +18,40 @@ contract('NFTCollection', (accounts) => {
       assert.notEqual(address, undefined);
     });
 
-    it('has a name', async () => {
+    it('has a name', async() => {
       const name = await contract.name();
       assert.equal(name, 'mTC Collection');
     });
 
-    it('has a symbol', async () => {
+    it('has a symbol', async() => {
       const symbol = await contract.symbol();
       assert.equal(symbol, 'mTC');
     });
   });
 
-  // describe('minting', async () => {
-  //   it('creates a new token', async () => {
-  //     const result = await contract.safeMint('#000000');
-  //     const totalSupply = await contract.totalSupply();
+  describe('minting', () => {
+    it('creates a new token', async () => {
+      const result = await contract.safeMint('testURI');
+      const totalSupply = await contract.totalSupply();
 
-  //     // SUCCESS
-  //     assert.equal(totalSupply, 1);
-  //     const event = result.logs[0].args;
-  //     assert.equal(event.tokenId.toNumber(), 1, 'id is correct');
-  //     assert.equal(event.from, '0x0000000000000000000000000000000000000000', 'from is correct');
-  //     assert.equal(event.to, accounts[0], 'to is correct')
+      // SUCCESS
+      assert.equal(totalSupply, 1);
+      const event = result.logs[0].args;
+      assert.equal(event.tokenId.toNumber(), 1, 'id is correct');
+      assert.equal(event.from, '0x0000000000000000000000000000000000000000', 'from is correct');
+      assert.equal(event.to, accounts[0], 'to is correct')
 
-  //     // FAILURE: cannot mint same color twice
-  //     await expectRevert(
-  //       contract.safeMint('#000000'), 
-  //       'The color should be unique'
-  //     );
-  //   });
-  // });
+      // FAILURE: cannot mint same color twice
+      await expectRevert(contract.safeMint('testURI'), 'The token URI should be unique');
+    });
 
-  // describe('indexing', async () => {
-  //   it('lists colors', async () => {
-  //     // Mint 3 more tokens
-  //     await contract.safeMint('#111111');
-  //     await contract.safeMint('#222222');
-  //     await contract.safeMint('#333333');
-  //     const totalSupply = await contract.totalSupply();
+    it('token URI is correctly assigned', async() => {
+      // SUCCESS
+      const tokenURI = await contract.tokenURI(1);
+      assert.equal(tokenURI, 'testURI');
 
-  //     let color;
-  //     let result = [];
-
-  //     for (var i = 1; i <= totalSupply; i++) {
-  //       color = await contract.colors(i - 1);
-  //       result.push(color);
-  //     }
-
-  //     let expected = ['#000000', '#111111', '#222222', '#333333'];
-  //     assert.equal(result.join(), expected.join());
-  //   });
-  // });
+      // FAILURE
+      await expectRevert(contract.tokenURI(2), 'ERC721Metadata: URI query for nonexistent token');
+    });
+  });
 });

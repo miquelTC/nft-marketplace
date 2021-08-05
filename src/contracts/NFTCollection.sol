@@ -23,7 +23,7 @@ contract NFTCollection is ERC721, ERC721Enumerable {
   }
 
   function tokenURI(uint256 tokenId) public override view returns (string memory) {
-    require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+    require(_exists(tokenId), 'ERC721Metadata: URI query for nonexistent token');
     return _tokenIdToTokenURI[tokenId];
   }
 
