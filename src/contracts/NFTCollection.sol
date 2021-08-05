@@ -4,12 +4,6 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 
-/*
-** Mint NFT
-** Buy NFT
-** Change price
-*/
-
 contract NFTCollection is ERC721, ERC721Enumerable {
   string[] public tokenURIs;
   mapping(string => bool) _tokenURIExists;
