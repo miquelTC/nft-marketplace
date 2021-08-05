@@ -29,7 +29,7 @@ contract NFTMarketplace {
 
   event OfferFilled(uint offerId);
   event OfferCancelled(uint offerId);
-  event OfferModified(uint offerId, uint price);
+  //event OfferModified(uint offerId, uint price);
   event ClaimFunds(address user, uint amount);
 
   constructor(address _nftCollection) {
@@ -65,15 +65,15 @@ contract NFTMarketplace {
     emit OfferCancelled(_offerId);
   }
 
-  function changePrice(uint _offerId, uint _newPrice) public {
-    _Offer storage _offer = offers[_offerId];
-    require(_offer.offerId == _offerId); // the offer must exist
-    require(_offer.user == msg.sender, 'Only the owner can modify its offer');
-    require(_offer.fulfilled == false, 'Only non-fulfilled orders can be modified');
-    require(_offer.cancelled == false, 'Only non-cancelled orders can be modified');
-    _offer.price = _newPrice;
-    emit OfferModified(_offerId, _newPrice);
-  }
+  // function changePrice(uint _offerId, uint _newPrice) public {
+  //   _Offer storage _offer = offers[_offerId];
+  //   require(_offer.offerId == _offerId); // the offer must exist
+  //   require(_offer.user == msg.sender, 'Only the owner can modify its offer');
+  //   require(_offer.fulfilled == false, 'Only non-fulfilled orders can be modified');
+  //   require(_offer.cancelled == false, 'Only non-cancelled orders can be modified');
+  //   _offer.price = _newPrice;
+  //   emit OfferModified(_offerId, _newPrice);
+  // }
 
   function claimFunds() public {
     require(userFunds[msg.sender] > 0, 'This user has no funds to be claimed');
