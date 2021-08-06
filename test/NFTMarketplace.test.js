@@ -59,12 +59,17 @@ contract('NFTMarketplace', (accounts) => {
   });
 
   describe('Fill Offer', () => {
-    it('fills the offer', async() => {
-      await mktContract.fillOffer(1, { from: accounts[1], value: 10 });
+    it('fills the offer and emits Event', async() => {
+      const result = await mktContract.fillOffer(1, { from: accounts[1], value: 10 });
       const offer = await mktContract.offers(1);
       assert.equal(offer.fulfilled, true);
       const userFunds = await mktContract.userFunds(offer.user);
       assert.equal(userFunds.toNumber(), 10);
+
+      const log = result.logs[0];
+      assert.equal(log.event, 'OfferFilled');
+      const event = log.args;
+      assert.equal(event.offerId.toNumber(), 1);
     });
     
     it('The offer must exist', async() => {
@@ -83,8 +88,57 @@ contract('NFTMarketplace', (accounts) => {
       await expectRevert(mktContract.cancelOffer(1, { from: accounts[0] }), 'A fulfilled offer cannot be cancelled');
     });
 
-    it('A fulfilled order cannot be cancelled', async() => {
+    it('The ETH sent should match the price', async() => {
       await expectRevert(mktContract.fillOffer(2, { from: accounts[1], value: 5 }), 'The ETH amount should match with the NFT Price');
+    });
+  });
+
+  describe('Cancel Offer', () => {
+    it('Only the owner can cancel', async() => {
+      await expectRevert(mktContract.cancelOffer(2, { from: accounts[1] }), 'The offer can only be canceled by the owner');
+    });
+    
+    it('Cancels the offer and emits Event', async() => {
+      const result = await mktContract.cancelOffer(2, { from: accounts[0] });
+      const offer = await mktContract.offers(2);
+      assert.equal(offer.cancelled, true);
+
+      const log = result.logs[0];
+      assert.equal(log.event, 'OfferCancelled');
+      const event = log.args;
+      assert.equal(event.offerId.toNumber(), 2);
+    });
+    
+    it('The offer must exist', async() => {
+      await expectRevert(mktContract.cancelOffer(3, { from: accounts[0] }), 'The offer must exist');
+    });    
+
+    it('Cannot be cancelled twice', async() => {
+      await expectRevert(mktContract.cancelOffer(2, { from: accounts[0] }), 'An offer cannot be cancelled twice');
+    });
+
+    it('A cancelled offer cannot be fulfilled', async() => {
+      await expectRevert(mktContract.fillOffer(2, { from: accounts[1] }), 'A cancelled offer cannot be fulfilled');
+    });
+  });
+
+  describe('Claim funds', () => {
+    it('Rejects users without funds to claim', async() => {
+      await expectRevert(mktContract.claimFunds({ from: accounts[1] }), 'This user has no funds to be claimed');
+    });
+
+    it('Pays the correct amount and emits Event', async() => {
+      const fundsBefore = await mktContract.userFunds(accounts[0]);
+      const result = await mktContract.claimFunds({ from: accounts[0] });
+      const fundsAfter = await mktContract.userFunds(accounts[0]);
+      assert.equal(fundsBefore.toNumber(), 10);
+      assert.equal(fundsAfter.toNumber(), 0);
+
+      const log = result.logs[0];
+      assert.equal(log.event, 'ClaimFunds');
+      const event = log.args;
+      assert.equal(event.user, accounts[0]);
+      assert.equal(event.amount.toNumber(), 10);
     });
   });
 });
