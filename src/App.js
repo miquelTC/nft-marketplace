@@ -2,11 +2,18 @@ import React, { useState, useEffect } from 'react';
 
 import web3 from './connection/web3';
 import Navbar from './components/Layout/Navbar';
+import Main from './components/Content/Main';
 import Spinner from './components/Layout/Spinner';
+import NFTCollection from './abis/NFTCollection.json';
+import NFTMarketplace from './abis/NFTMarketplace.json';
 
 
 const App = () => {
-  // State Variables (contract, networkId, account, isLoading...)  
+  const [nftContract, setNftContract] = useState(null);
+  const [mktContract, setMktContract] = useState(null);
+  const [networkId, setNetworkId] = useState(null);
+  const [account, setAccount] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);  
   
   useEffect(() => {
     // Check if the user has Metamask active
@@ -24,20 +31,45 @@ const App = () => {
         console.error(error);
       }
       
-      // Load account  
+      // Load account
+      const accounts = await web3.eth.getAccounts();       
+      setAccount(accounts[0]);
+
       // Load Network ID
-      // Load Contract     
+      const networkId = await web3.eth.net.getId()
+      setNetworkId(networkId);
 
-      if(contract) {
+      // Load Contracts
+      const nftDeployedNetwork = NFTCollection.networks[networkId];
+      const nftContract = nftDeployedNetwork ? new web3.eth.Contract(NFTCollection.abi, nftDeployedNetwork.address): '';
+
+      const mktDeployedNetwork = NFTMarketplace.networks[networkId];
+      const mktContract = mktDeployedNetwork ? new web3.eth.Contract(NFTMarketplace.abi, mktDeployedNetwork.address): '';
+
+      if(nftContract) {
         // Set contract in state
-        // Load whatever is needed from smart contract
+        setNftContract(nftContract);
 
-        setIsLoading(false);
-
+        // Load whatever is needed from smart contract        
         // Event subscription 
         
       } else {
-        window.alert('ColorNFT contract not deployed to detected network.')
+        window.alert('NFTCollection contract not deployed to detected network.')
+      }
+
+      if(mktContract) {
+        // Set contract in state
+        setMktContract(mktContract);
+
+        // Load whatever is needed from smart contract        
+        // Event subscription 
+        
+      } else {
+        window.alert('NFTMarketplace contract not deployed to detected network.')
+      }
+
+      if(nftContract && mktContract) {
+        setIsLoading(false);
       }
     };
     
@@ -54,11 +86,11 @@ const App = () => {
     });
   }, []);
 
-  const showContent = web3 && contract && account;
+  const showContent = web3 && nftContract && mktContract && account;
   
   return(
     <React.Fragment>
-      <Navbar />
+      <Navbar account={account} setAccount={setAccount} networkId={networkId} web3={web3} />
       {showContent && !isLoading && <Main />}
       {isLoading && <Spinner />}
     </React.Fragment>

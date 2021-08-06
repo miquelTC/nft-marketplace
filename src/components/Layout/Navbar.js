@@ -1,5 +1,5 @@
 
-import logo from '../../img/logo.png'
+//import logo from '../../img/logo.png'
 
 const Navbar = (props) => {
   const connectWalletHandler = async() => {
@@ -30,8 +30,8 @@ const Navbar = (props) => {
   return (
     <nav className="navbar navbar-dark bg-primary p-0">
       <a className="navbar-brand" href="/#">
-        <img src={logo} width="40" height="40" className="align-center" alt="logo" />
-        mTC - NFT Open Colors
+        {/* <img src={logo} width="40" height="40" className="align-center" alt="logo" /> */}
+        mTC - NFT Marketplace
       </a>
       <ul className="navbar-nav px-3">
         <li className="nav-item">
