@@ -91,7 +91,7 @@ const App = () => {
   return(
     <React.Fragment>
       <Navbar account={account} setAccount={setAccount} networkId={networkId} web3={web3} />
-      {showContent && !isLoading && <Main />}
+      {showContent && !isLoading && <Main nftContract={nftContract} account={account} />}
       {isLoading && <Spinner />}
     </React.Fragment>
   );
