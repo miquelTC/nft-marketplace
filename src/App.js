@@ -13,6 +13,8 @@ const App = () => {
   const [mktContract, setMktContract] = useState(null);
   const [networkId, setNetworkId] = useState(null);
   const [account, setAccount] = useState(null);
+  const [totalSupply, setTotalSupply] = useState(null);
+  const [tokenURIs, setTokenURIs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);  
   
   useEffect(() => {
@@ -50,7 +52,16 @@ const App = () => {
         // Set contract in state
         setNftContract(nftContract);
 
-        // Load whatever is needed from smart contract        
+        // Load total Supply
+        const totalSupply = await nftContract.methods.totalSupply().call();
+        setTotalSupply(totalSupply);
+        
+        // Load Token URIs
+        for(let i = 0; i < totalSupply; i++) {
+          const tokenURI = await nftContract.methods.tokenURIs(i).call();
+          setTokenURIs(prevState => [...prevState, tokenURI]);
+        }        
+
         // Event subscription 
         
       } else {
@@ -91,7 +102,7 @@ const App = () => {
   return(
     <React.Fragment>
       <Navbar account={account} setAccount={setAccount} networkId={networkId} web3={web3} />
-      {showContent && !isLoading && <Main nftContract={nftContract} account={account} />}
+      {showContent && !isLoading && <Main nftContract={nftContract} account={account} tokenURIs={tokenURIs} totalSupply={totalSupply} />}
       {isLoading && <Spinner />}
     </React.Fragment>
   );

@@ -1,4 +1,5 @@
 import MintForm from "./MintNFT/MintForm"
+import NFTCollection from "./NFTCollection/NFTCollection"
 
 const Main = (props) => {
   return(
@@ -12,7 +13,7 @@ const Main = (props) => {
         </main>
       </div>
       <hr/>
-
+      <NFTCollection tokenURIs={props.tokenURIs} totalSupply={props.totalSupply} nftContract={props.nftContract} />
     </div>
   );
 };

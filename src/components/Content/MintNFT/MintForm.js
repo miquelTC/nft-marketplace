@@ -29,7 +29,7 @@ const MintForm = (props) => {
   };
 
   // Upload file to IPFS and push to the blockchain
-  const uploadFile = async() => {
+  const mintNFT = async() => {
     // Add file to the IPFS
     const fileAdded = await ipfs.add(capturedFileBuffer);
     if(!fileAdded) {
@@ -57,6 +57,10 @@ const MintForm = (props) => {
     };
 
     const metadataAdded = await ipfs.add(JSON.stringify(metadata));
+    if(!metadataAdded) {
+      console.error('Something went wrong when updloading the file');
+      return;
+    }
     
     props.nftContract.methods.safeMint(metadataAdded.path).send({ from: props.account })
     .on('transactionHash', (hash) => {
@@ -72,7 +76,7 @@ const MintForm = (props) => {
   const submissionHandler = (event) => {
     event.preventDefault();
 
-    uploadFile();
+    mintNFT();
 
   }
   
