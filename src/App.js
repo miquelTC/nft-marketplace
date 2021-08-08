@@ -1,21 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 
 import web3 from './connection/web3';
 import Navbar from './components/Layout/Navbar';
 import Main from './components/Content/Main';
 import Spinner from './components/Layout/Spinner';
+import Web3Context from './store/web3-context';
+import CollectionContext from './store/collection-context';
 import NFTCollection from './abis/NFTCollection.json';
 import NFTMarketplace from './abis/NFTMarketplace.json';
 
 
 const App = () => {
-  const [nftContract, setNftContract] = useState(null);
   const [mktContract, setMktContract] = useState(null);
-  const [networkId, setNetworkId] = useState(null);
-  const [account, setAccount] = useState(null);
-  const [totalSupply, setTotalSupply] = useState(null);
-  const [tokenURIs, setTokenURIs] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);  
+  
+  const web3Ctx = useContext(Web3Context);
+  const collectionCtx = useContext(CollectionContext);
   
   useEffect(() => {
     // Check if the user has Metamask active
@@ -34,33 +33,24 @@ const App = () => {
       }
       
       // Load account
-      const accounts = await web3.eth.getAccounts();       
-      setAccount(accounts[0]);
+      web3Ctx.loadAccount(web3);
 
       // Load Network ID
-      const networkId = await web3.eth.net.getId()
-      setNetworkId(networkId);
+      const networkId = await web3Ctx.loadNetworkId(web3);
 
-      // Load Contracts
+      // Load Contracts      
       const nftDeployedNetwork = NFTCollection.networks[networkId];
-      const nftContract = nftDeployedNetwork ? new web3.eth.Contract(NFTCollection.abi, nftDeployedNetwork.address): '';
+      const nftContract = collectionCtx.loadContract(web3, NFTCollection, nftDeployedNetwork);
 
       const mktDeployedNetwork = NFTMarketplace.networks[networkId];
       const mktContract = mktDeployedNetwork ? new web3.eth.Contract(NFTMarketplace.abi, mktDeployedNetwork.address): '';
 
-      if(nftContract) {
-        // Set contract in state
-        setNftContract(nftContract);
-
+      if(nftContract) {        
         // Load total Supply
-        const totalSupply = await nftContract.methods.totalSupply().call();
-        setTotalSupply(totalSupply);
+        const totalSupply = collectionCtx.loadTotalSupply(nftContract);
         
         // Load Token URIs
-        for(let i = 0; i < totalSupply; i++) {
-          const tokenURI = await nftContract.methods.tokenURIs(i).call();
-          setTokenURIs(prevState => [...prevState, tokenURI]);
-        }        
+        collectionCtx.loadCollection(nftContract, totalSupply);       
 
         // Event subscription 
         
@@ -80,7 +70,7 @@ const App = () => {
       }
 
       if(nftContract && mktContract) {
-        setIsLoading(false);
+        // setIsLoading(false);
       }
     };
     
@@ -88,7 +78,7 @@ const App = () => {
     
     // Metamask Event Subscription - Account changed
     window.ethereum.on('accountsChanged', (accounts) => {
-      setAccount(accounts[0]);
+      web3Ctx.loadAccount(web3);
     });
 
     // Metamask Event Subscription - Network changed
@@ -97,13 +87,13 @@ const App = () => {
     });
   }, []);
 
-  const showContent = web3 && nftContract && mktContract && account;
+  const showContent = web3 && collectionCtx.contract && mktContract && web3Ctx.account;
   
   return(
     <React.Fragment>
-      <Navbar account={account} setAccount={setAccount} networkId={networkId} web3={web3} />
-      {showContent && !isLoading && <Main nftContract={nftContract} account={account} tokenURIs={tokenURIs} totalSupply={totalSupply} />}
-      {isLoading && <Spinner />}
+      <Navbar />
+      {showContent && <Main />}
+      {/* {isLoading && <Spinner />} */}
     </React.Fragment>
   );
 };

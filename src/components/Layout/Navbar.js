@@ -1,7 +1,12 @@
+import { useContext } from 'react';
 
+import Web3Context from '../../store/web3-context';
+import web3 from '../../connection/web3';
 //import logo from '../../img/logo.png'
 
-const Navbar = (props) => {
+const Navbar = () => {
+  const web3Ctx = useContext(Web3Context);
+  
   const connectWalletHandler = async() => {
     try {
       // Request account access
@@ -11,17 +16,16 @@ const Navbar = (props) => {
     }
 
     // Load accounts
-    const accounts = await props.web3.eth.getAccounts();
-    props.setAccount(accounts[0]);
+    web3Ctx.loadAccount(web3);
   };
 
   let etherscanUrl;
 
-  if(props.networkId === 3) {
+  if(web3Ctx.networkId === 3) {
     etherscanUrl = 'https://ropsten.etherscan.io'
-  } else if(props.networkId === 4) {
+  } else if(web3Ctx.networkId === 4) {
     etherscanUrl = 'https://rinkeby.etherscan.io'
-  } else if(props.networkId === 5) {
+  } else if(web3Ctx.networkId === 5) {
     etherscanUrl = 'https://goerli.etherscan.io'
   } else {
     etherscanUrl = 'https://etherscan.io'
@@ -35,16 +39,16 @@ const Navbar = (props) => {
       </a>
       <ul className="navbar-nav px-3">
         <li className="nav-item">
-          {props.account && 
+          {web3Ctx.account && 
             <a 
               className="nav-link small" 
-              href={`${etherscanUrl}/address/${props.account}`}
+              href={`${etherscanUrl}/address/${web3Ctx.account}`}
               target="blank"
               rel="noopener noreferrer"
             >
-              {props.account}
+              {web3Ctx.account}
             </a>}
-          {!props.account && 
+          {!web3Ctx.account && 
             <button 
               type="button" 
               className="btn btn-outline-light" 

@@ -1,12 +1,18 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+
+import Web3Context from '../../../store/web3-context';
+import CollectionContext from '../../../store/collection-context';
 
 const ipfsClient = require('ipfs-http-client');
 const ipfs = ipfsClient.create({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
 
-const MintForm = (props) => {
+const MintForm = () => {
   const [capturedFileBuffer, setCapturedFileBuffer] = useState(null);
   const [enteredName, setEnteredName] = useState('');
   const [enteredDescription, setEnteredDescription] = useState('');
+
+  const web3Ctx = useContext(Web3Context);
+  const collectionCtx = useContext(CollectionContext);
 
   const enteredNameHandler = (event) => {
     setEnteredName(event.target.value);
@@ -62,7 +68,7 @@ const MintForm = (props) => {
       return;
     }
     
-    props.nftContract.methods.safeMint(metadataAdded.path).send({ from: props.account })
+    collectionCtx.contract.methods.safeMint(metadataAdded.path).send({ from: web3Ctx.account })
     .on('transactionHash', (hash) => {
       console.log(metadataAdded.path);
     })
@@ -77,7 +83,6 @@ const MintForm = (props) => {
     event.preventDefault();
 
     mintNFT();
-
   }
   
   return(
