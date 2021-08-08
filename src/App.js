@@ -6,6 +6,7 @@ import Main from './components/Content/Main';
 import Spinner from './components/Layout/Spinner';
 import Web3Context from './store/web3-context';
 import CollectionContext from './store/collection-context';
+import MarketplaceContext from './store/marketplace-context'
 import NFTCollection from './abis/NFTCollection.json';
 import NFTMarketplace from './abis/NFTMarketplace.json';
 
@@ -15,6 +16,7 @@ const App = () => {
   
   const web3Ctx = useContext(Web3Context);
   const collectionCtx = useContext(CollectionContext);
+  const marketplaceCtx = useContext(MarketplaceContext);
   
   useEffect(() => {
     // Check if the user has Metamask active
@@ -43,13 +45,13 @@ const App = () => {
       const nftContract = collectionCtx.loadContract(web3, NFTCollection, nftDeployedNetwork);
 
       const mktDeployedNetwork = NFTMarketplace.networks[networkId];
-      const mktContract = mktDeployedNetwork ? new web3.eth.Contract(NFTMarketplace.abi, mktDeployedNetwork.address): '';
+      const mktContract = marketplaceCtx.loadContract(web3, NFTMarketplace, mktDeployedNetwork);
 
       if(nftContract) {        
         // Load total Supply
-        const totalSupply = collectionCtx.loadTotalSupply(nftContract);
+        const totalSupply = await collectionCtx.loadTotalSupply(nftContract);
         
-        // Load Token URIs
+        // Load Collection
         collectionCtx.loadCollection(nftContract, totalSupply);       
 
         // Event subscription 
@@ -59,9 +61,6 @@ const App = () => {
       }
 
       if(mktContract) {
-        // Set contract in state
-        setMktContract(mktContract);
-
         // Load whatever is needed from smart contract        
         // Event subscription 
         
@@ -87,7 +86,7 @@ const App = () => {
     });
   }, []);
 
-  const showContent = web3 && collectionCtx.contract && mktContract && web3Ctx.account;
+  const showContent = web3 && collectionCtx.contract && marketplaceCtx.contract && web3Ctx.account;
   
   return(
     <React.Fragment>

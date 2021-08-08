@@ -1,4 +1,4 @@
-import { useReducer, useCallback } from 'react';
+import { useReducer } from 'react';
 
 import CollectionContext from './collection-context';
 
@@ -28,8 +28,8 @@ const collectionReducer = (state, action) => {
   if(action.type === 'LOADCOLLECTION') {    
     return {
       contract: state.contract,
-      totalSupply: action.totalSupply,
-      collection: state.collection
+      totalSupply: state.totalSupply,
+      collection: action.collection
     };
   }
 
@@ -69,10 +69,10 @@ const CollectionProvider = props => {
   };
 
   const loadCollectionHandler = async(contract, totalSupply) => {
-    let collection, hash;
+    let collection = [];
 
     for(let i = 0; i < totalSupply; i++) {
-      hash = await contract.methods.tokenURIs(i).call();
+      const hash = await contract.methods.tokenURIs(i).call();
       try {
         const response = await fetch(`https://ipfs.infura.io/ipfs/${hash}?clear`);
         if(!response.ok) {

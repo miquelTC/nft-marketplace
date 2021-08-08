@@ -1,41 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useContext } from 'react';
 
-const NFTCollection = (props) => {
-  const [NFTCollection, setNFTCollection] = useState([]);
-  
-  useEffect(() => {
-    const fetchMetadata = async() => {
-      let hash;      
-      for(let i = 0; i < props.totalSupply; i++) {
-        hash = props.tokenURIs[i];
-        try {
-          const response = await fetch(`https://ipfs.infura.io/ipfs/${hash}?clear`);
-          if(!response.ok) {
-            throw new Error('Something went wrong');
-          }
-  
-          const metadata = await response.json();
+import CollectionContext from '../../../store/collection-context';
 
-          const owner = await props.nftContract.methods.ownerOf(i + 1).call();
-
-          setNFTCollection(prevState => [...prevState, {
-            title: metadata.properties.name.description,
-            img: metadata.properties.image.description,
-            owner: owner
-          }]);
-        }catch {
-          console.error('Something went wrong');
-        }        
-      }
-    };
-    fetchMetadata();
-  }, []);
-
-  console.log('collection', NFTCollection);
+const NFTCollection = () => {
+  const collectionCtx = useContext(CollectionContext);
   
   return(
     <div className="row text-center">
-      {NFTCollection.map((NFT, key) => {
+      {collectionCtx.collection.map((NFT, key) => {
         return(
           <div key={key} className="col-md-2 m-3 pb-3 card border-primary">
             <div className={"card-body"}>       
