@@ -62,6 +62,7 @@ contract NFTMarketplace {
     require(_offer.user == msg.sender, 'The offer can only be canceled by the owner');
     require(_offer.fulfilled == false, 'A fulfilled offer cannot be cancelled');
     require(_offer.cancelled == false, 'An offer cannot be cancelled twice');
+    nftCollection.transferFrom(address(this), msg.sender, _offer.id);
     _offer.cancelled = true;
     emit OfferCancelled(_offerId);
   }

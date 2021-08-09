@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useEffect } from 'react';
 
 import web3 from './connection/web3';
 import Navbar from './components/Layout/Navbar';
@@ -12,8 +12,6 @@ import NFTMarketplace from './abis/NFTMarketplace.json';
 
 
 const App = () => {
-  const [mktContract, setMktContract] = useState(null);
-  
   const web3Ctx = useContext(Web3Context);
   const collectionCtx = useContext(CollectionContext);
   const marketplaceCtx = useContext(MarketplaceContext);
@@ -61,7 +59,12 @@ const App = () => {
       }
 
       if(mktContract) {
-        // Load whatever is needed from smart contract        
+        // Load offer count
+        const offerCount = await marketplaceCtx.loadOfferCount(mktContract);
+        
+        // Load offers
+        marketplaceCtx.loadOffers(mktContract, offerCount);        
+
         // Event subscription 
         
       } else {

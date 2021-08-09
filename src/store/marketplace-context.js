@@ -1,8 +1,13 @@
 import React from 'react';
 
 const MarketplaceContext = React.createContext({
-  contract: null, 
-  loadContract: () => {} 
+  contract: null,
+  offerCount: null,
+  offers: [],
+  loadContract: () => {},
+  loadOfferCount: () => {},
+  loadOffers: () => {},
+  fillOffer: () => {} 
 });
 
 export default MarketplaceContext;
