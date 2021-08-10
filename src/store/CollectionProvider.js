@@ -5,7 +5,8 @@ import CollectionContext from './collection-context';
 const defaultCollectionState = {
   contract: null,
   totalSupply: null,
-  collection: []
+  collection: [],
+  nftIsLoading: true
 };
 
 const collectionReducer = (state, action) => {
@@ -13,7 +14,8 @@ const collectionReducer = (state, action) => {
     return {
       contract: action.contract,
       totalSupply: state.totalSupply,
-      collection: state.collection
+      collection: state.collection,
+      nftIsLoading: state.nftIsLoading
     };
   } 
   
@@ -21,7 +23,8 @@ const collectionReducer = (state, action) => {
     return {
       contract: state.contract,
       totalSupply: action.totalSupply,
-      collection: state.collection
+      collection: state.collection,
+      nftIsLoading: state.nftIsLoading
     };
   }
 
@@ -29,7 +32,8 @@ const collectionReducer = (state, action) => {
     return {
       contract: state.contract,
       totalSupply: state.totalSupply,
-      collection: action.collection
+      collection: action.collection,
+      nftIsLoading: state.nftIsLoading
     };
   }
 
@@ -46,9 +50,19 @@ const collectionReducer = (state, action) => {
     return {
       contract: state.contract,
       totalSupply: state.totalSupply,
-      collection: collection
+      collection: collection,
+      nftIsLoading: state.nftIsLoading
     };
-  } 
+  }
+
+  if(action.type === 'LOADING') {    
+    return {
+      contract: state.contract,
+      totalSupply: state.totalSupply,
+      collection: state.collection,
+      nftIsLoading: action.loading
+    };
+  }
   
   return defaultCollectionState;
 };
@@ -117,14 +131,20 @@ const CollectionProvider = props => {
     dispatchCollectionAction({type: 'UPDATECOLLECTION', NFT: NFT});
   };
 
+  const setNftIsLoadingHandler = (loading) => {
+    dispatchCollectionAction({type: 'LOADING', loading: loading});
+  };
+
   const collectionContext = {
     contract: CollectionState.contract,
     totalSupply: CollectionState.totalSupply,
     collection: CollectionState.collection,
+    nftIsLoading:CollectionState.nftIsLoading,
     loadContract: loadContractHandler,
     loadTotalSupply: loadTotalSupplyHandler,
     loadCollection: loadCollectionHandler,
-    updateCollectionHandler: updateCollectionHandler    
+    updateCollection: updateCollectionHandler,
+    setNftIsLoading: setNftIsLoadingHandler
   };
   
   return (

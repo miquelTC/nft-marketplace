@@ -5,7 +5,8 @@ import MarketplaceContext from './marketplace-context';
 const defaultMarketplaceState = {
   contract: null,
   offerCount: null,
-  offers: []
+  offers: [],
+  mktIsLoading: true
 };
 
 const marketplaceReducer = (state, action) => {
@@ -13,7 +14,8 @@ const marketplaceReducer = (state, action) => {
     return {
       contract: action.contract,
       offerCount: state.offerCount,
-      offers: state.offer
+      offers: state.offer,
+      mktIsLoading: state.mktIsLoading
     };
   }
 
@@ -21,7 +23,8 @@ const marketplaceReducer = (state, action) => {
     return {
       contract: state.contract,
       offerCount: action.offerCount,
-      offers: state.offer
+      offers: state.offer,
+      mktIsLoading: state.mktIsLoading
     };
   }
 
@@ -29,7 +32,8 @@ const marketplaceReducer = (state, action) => {
     return {
       contract: state.contract,
       offerCount: state.offerCount,
-      offers: action.offers
+      offers: action.offers,
+      mktIsLoading: state.mktIsLoading
     };
   }
 
@@ -39,7 +43,17 @@ const marketplaceReducer = (state, action) => {
     return {
       contract: state.contract,
       offerCount: state.offerCount,
-      offers: offers
+      offers: offers,
+      mktIsLoading: state.mktIsLoading
+    };
+  }
+
+  if(action.type === 'LOADING') {    
+    return {
+      contract: state.contract,
+      offerCount: state.offerCount,
+      offers: state.offers,
+      mktIsLoading: action.loading
     };
   }
   
@@ -103,14 +117,20 @@ const MarketplaceProvider = props => {
     });    
   };
 
+  const setMktIsLoadingHandler = (loading) => {
+    dispatchMarketplaceAction({type: 'LOADING', loading: loading});
+  };
+
   const marketplaceContext = {
     contract: MarketplaceState.contract,
     offerCount: MarketplaceState.offerCount,
     offers: MarketplaceState.offers,
+    mktIsLoading: MarketplaceState.mktIsLoading,
     loadContract: loadContractHandler,
     loadOfferCount: loadOfferCountHandler,
     loadOffers: loadOffersHandler,
-    fillOffer: fillOfferHandler
+    fillOffer: fillOfferHandler,
+    setMktIsLoading: setMktIsLoadingHandler
   };
   
   return (

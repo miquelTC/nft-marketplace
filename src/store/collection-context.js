@@ -3,12 +3,14 @@ import React from 'react';
 const CollectionContext = React.createContext({
   contract: null,
   totalSupply: null,
-  collection: [],  
+  collection: [],
+  nftIsLoading: true,
   loadContract: () => {},
   loadTotalSupply: () => {},
   loadCollection: () => {},
   updateTotalSupply: () => {},
-  updateCollection: () => {}  
+  updateCollection: () => {},
+  setNftIsLoading: () => {}
 });
 
 export default CollectionContext;
