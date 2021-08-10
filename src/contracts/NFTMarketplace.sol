@@ -27,7 +27,7 @@ contract NFTMarketplace {
     bool cancelled
   );
 
-  event OfferFilled(uint offerId);
+  event OfferFilled(uint offerId, uint id, address newOwner);
   event OfferCancelled(uint offerId);
   //event OfferModified(uint offerId, uint price);
   event ClaimFunds(address user, uint amount);
@@ -53,7 +53,7 @@ contract NFTMarketplace {
     nftCollection.transferFrom(address(this), msg.sender, _offer.id);
     _offer.fulfilled = true;
     userFunds[_offer.user] += msg.value;
-    emit OfferFilled(_offerId);
+    emit OfferFilled(_offerId, _offer.id, msg.sender);
   }
 
   function cancelOffer(uint _offerId) public {

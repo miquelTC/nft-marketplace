@@ -10,9 +10,17 @@ const NFTCollection = () => {
   const collectionCtx = useContext(CollectionContext);
   const marketplaceCtx = useContext(MarketplaceContext);
 
-  const buyHandler = (event) => {
+  const buyHandler = (event) => {    
     const buyIndex = parseInt(event.target.value);
-    marketplaceCtx.fillOffer(marketplaceCtx.contract, marketplaceCtx.offers[buyIndex].offerId, web3Ctx.account, marketplaceCtx.offers[buyIndex].price);
+    // collectionCtx.updateOwner(marketplaceCtx.offers[buyIndex].offerId, web3Ctx.account);
+    marketplaceCtx.contract.methods.fillOffer(marketplaceCtx.offers[buyIndex].offerId).send({ from: web3Ctx.account, value: marketplaceCtx.offers[buyIndex].price })
+    .on('transactionHash', (hash) => {
+      marketplaceCtx.setMktIsLoading(true);
+    })
+    .on('error', (error) => {
+      window.alert('Something went wrong when pushing to the blockchain');
+      
+    });    
   };
  
   return(

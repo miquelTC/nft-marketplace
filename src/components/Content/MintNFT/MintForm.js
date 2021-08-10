@@ -70,11 +70,11 @@ const MintForm = () => {
     
     collectionCtx.contract.methods.safeMint(metadataAdded.path).send({ from: web3Ctx.account })
     .on('transactionHash', (hash) => {
-      console.log(metadataAdded.path);
+      collectionCtx.setNftIsLoading(true);
     })
     .on('error', (e) =>{
       window.alert('Something went wrong when pushing to the blockchain');
-      // setIsLoading(false);  
+      collectionCtx.setNftIsLoading(false);  
     })
     
   };

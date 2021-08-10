@@ -38,14 +38,27 @@ const collectionReducer = (state, action) => {
   }
 
   if(action.type === 'UPDATECOLLECTION') {    
-    // Prevent duplicate NFT if Event triggered twice
-    const index = state.collection.findIndex(NFT => NFT.id === action.NFT.id);
+    // Prevent duplicate NFT if Event triggered twice    
+    const index = state.collection.findIndex(NFT => NFT.id === parseInt(action.NFT.id));
     let collection = [];
     if(index === -1) {
       collection = [...state.collection, action.NFT];
     } else {
       collection = [...state.collection];
     }    
+
+    return {
+      contract: state.contract,
+      totalSupply: state.totalSupply,
+      collection: collection,
+      nftIsLoading: state.nftIsLoading
+    };
+  }
+
+  if(action.type === 'UPDATEOWNER') {
+    const index = state.collection.findIndex(NFT => NFT.id === parseInt(action.id));
+    let collection = [...state.collection];
+    collection[index].owner = action.newOwner;
 
     return {
       contract: state.contract,
@@ -131,6 +144,10 @@ const CollectionProvider = props => {
     dispatchCollectionAction({type: 'UPDATECOLLECTION', NFT: NFT});
   };
 
+  const updateOwnerHandler = (id, newOwner) => {
+    dispatchCollectionAction({type: 'UPDATEOWNER', id: id, newOwner: newOwner});
+  };
+
   const setNftIsLoadingHandler = (loading) => {
     dispatchCollectionAction({type: 'LOADING', loading: loading});
   };
@@ -144,6 +161,7 @@ const CollectionProvider = props => {
     loadTotalSupply: loadTotalSupplyHandler,
     loadCollection: loadCollectionHandler,
     updateCollection: updateCollectionHandler,
+    updateOwner: updateOwnerHandler,
     setNftIsLoading: setNftIsLoadingHandler
   };
   

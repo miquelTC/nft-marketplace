@@ -37,8 +37,8 @@ const marketplaceReducer = (state, action) => {
     };
   }
 
-  if(action.type === 'FILLOFFER') {    
-    const offers = state.offers.filter(offer => offer.offerId !== action.offerId);
+  if(action.type === 'UPDATEOFFER') {    
+    const offers = state.offers.filter(offer => offer.offerId !== parseInt(action.offerId));
 
     return {
       contract: state.contract,
@@ -76,18 +76,7 @@ const MarketplaceProvider = props => {
   };
 
   const loadOffersHandler = async(contract, offerCount) => {
-    // const offerStream = await contract.getPastEvents('Offer', { fromBlock: 0, toBlock: 'latest' });
-    // let offers = offerStream.map(event => event.returnValues);
-    // offers = offers
-    // .map(offer => {
-    //   offer.offerId = parseInt(offer.offerId);
-    //   offer.id = parseInt(offer.id);
-    //   offer.price = parseInt(offer.price);
-    //   return offer;
-    // })
-    // .filter(offer => offer.fulfilled === false && offer.cancelled === false);
     let offers = [];
-    console.log(offerCount)
     for(let i = 0; i < offerCount; i++) {
       const offer = await contract.methods.offers(i + 1).call();
       offers.push(offer);
@@ -99,22 +88,12 @@ const MarketplaceProvider = props => {
       offer.price = parseInt(offer.price);
       return offer;
     })
-    .filter(offer => offer.fulfilled === false && offer.cancelled === false);
-
-    console.log('offers', offers);  
+    .filter(offer => offer.fulfilled === false && offer.cancelled === false); 
     dispatchMarketplaceAction({type: 'LOADOFFERS', offers: offers});
   };
 
-  const fillOfferHandler = (contract, offerId, account, price) => {
-    contract.methods.fillOffer(offerId).send({ from: account, value: price })
-    .on('transactionHash', (hash) => {
-      console.log('Offer fulfilled');
-      dispatchMarketplaceAction({type: 'FILLOFFER', offerId: offerId});
-    })
-    .on('error', (error) => {
-      window.alert('Something went wrong when pushing to the blockchain');
-      
-    });    
+  const updateOfferHandler = (offerId) => {
+    dispatchMarketplaceAction({type: 'UPDATEOFFER', offerId: offerId});   
   };
 
   const setMktIsLoadingHandler = (loading) => {
@@ -129,7 +108,7 @@ const MarketplaceProvider = props => {
     loadContract: loadContractHandler,
     loadOfferCount: loadOfferCountHandler,
     loadOffers: loadOffersHandler,
-    fillOffer: fillOfferHandler,
+    updateOffer: updateOfferHandler,
     setMktIsLoading: setMktIsLoadingHandler
   };
   

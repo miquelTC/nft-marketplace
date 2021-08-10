@@ -3,7 +3,6 @@ import React, { useContext, useEffect } from 'react';
 import web3 from './connection/web3';
 import Navbar from './components/Layout/Navbar';
 import Main from './components/Content/Main';
-import Spinner from './components/Layout/Spinner';
 import Web3Context from './store/web3-context';
 import CollectionContext from './store/collection-context';
 import MarketplaceContext from './store/marketplace-context'
@@ -52,7 +51,16 @@ const App = () => {
         // Load Collection
         collectionCtx.loadCollection(nftContract, totalSupply);       
 
-        // Event subscription 
+        // Event subscription
+        nftContract.events.Transfer()
+        .on('data', (event) => {
+          console.log('test Transfer');
+          collectionCtx.updateCollection(nftContract, event.returnValues.tokenId, event.returnValues.to);
+          collectionCtx.setNftIsLoading(false);
+        })
+        .on('error', (error) => {
+          console.log(error);
+        });
         
       } else {
         window.alert('NFTCollection contract not deployed to detected network.')
@@ -66,6 +74,16 @@ const App = () => {
         marketplaceCtx.loadOffers(mktContract, offerCount);        
 
         // Event subscription 
+        mktContract.events.OfferFilled()
+        .on('data', (event) => {
+          console.log('test offerFilled');
+          marketplaceCtx.updateOffer(event.returnValues.offerId);
+          collectionCtx.updateOwner(event.returnValues.id, event.returnValues.newOwner);
+          marketplaceCtx.setMktIsLoading(false);
+        })
+        .on('error', (error) => {
+          console.log(error);
+        });
         
       } else {
         window.alert('NFTMarketplace contract not deployed to detected network.')
