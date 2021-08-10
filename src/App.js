@@ -71,9 +71,8 @@ const App = () => {
         window.alert('NFTMarketplace contract not deployed to detected network.')
       }
 
-      if(nftContract && mktContract) {
-        // setIsLoading(false);
-      }
+      collectionCtx.setNftIsLoading(false);
+      marketplaceCtx.setMktIsLoading(false);
     };
     
     loadBlockchainData();
@@ -95,7 +94,6 @@ const App = () => {
     <React.Fragment>
       <Navbar />
       {showContent && <Main />}
-      {/* {isLoading && <Spinner />} */}
     </React.Fragment>
   );
 };
