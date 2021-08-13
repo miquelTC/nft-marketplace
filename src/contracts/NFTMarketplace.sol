@@ -28,7 +28,7 @@ contract NFTMarketplace {
   );
 
   event OfferFilled(uint offerId, uint id, address newOwner);
-  event OfferCancelled(uint offerId);
+  event OfferCancelled(uint offerId, uint id, address owner);
   //event OfferModified(uint offerId, uint price);
   event ClaimFunds(address user, uint amount);
 
@@ -64,7 +64,7 @@ contract NFTMarketplace {
     require(_offer.cancelled == false, 'An offer cannot be cancelled twice');
     nftCollection.transferFrom(address(this), msg.sender, _offer.id);
     _offer.cancelled = true;
-    emit OfferCancelled(_offerId);
+    emit OfferCancelled(_offerId, _offer.id, msg.sender);
   }
 
   // function changePrice(uint _offerId, uint _newPrice) public {

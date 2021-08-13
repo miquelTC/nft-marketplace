@@ -8,7 +8,8 @@ const MarketplaceContext = React.createContext({
   loadContract: () => {},
   loadOfferCount: () => {},
   loadOffers: () => {},
-  fillOffer: () => {},
+  updateOffer: () => {},
+  addOffer: () => {},
   setMktIsLoading: () => {}
 });
 

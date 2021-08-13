@@ -41,8 +41,9 @@ const collectionReducer = (state, action) => {
     // Prevent duplicate NFT if Event triggered twice    
     const index = state.collection.findIndex(NFT => NFT.id === parseInt(action.NFT.id));
     let collection = [];
+
     if(index === -1) {
-      collection = [...state.collection, action.NFT];
+      collection = [action.NFT, ...state.collection];
     } else {
       collection = [...state.collection];
     }    
@@ -109,12 +110,12 @@ const CollectionProvider = props => {
         const metadata = await response.json();
         const owner = await contract.methods.ownerOf(i + 1).call();
 
-        collection = [...collection, {
+        collection = [{
           id: i + 1,
           title: metadata.properties.name.description,
           img: metadata.properties.image.description,
           owner: owner
-        }];
+        }, ...collection];
       }catch {
         console.error('Something went wrong');
       }
@@ -133,7 +134,7 @@ const CollectionProvider = props => {
       const metadata = await response.json();      
 
       NFT = {
-        id: id,
+        id: parseInt(id),
         title: metadata.properties.name.description,
         img: metadata.properties.image.description,
         owner: owner

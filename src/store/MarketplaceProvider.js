@@ -48,6 +48,31 @@ const marketplaceReducer = (state, action) => {
     };
   }
 
+  if(action.type === 'ADDOFFER') {    
+    const index = state.offers.findIndex(offer => offer.offerId === parseInt(action.offer.offerId));
+    let offers = [];
+
+    if(index === -1) {
+      offers = [...state.offers, {
+        offerId: parseInt(action.offer.offerId),
+        id: parseInt(action.offer.id),
+        user: (action.offer.user),
+        price: parseInt(action.offer.price),
+        fulfilled: false,
+        cancelled: false
+      }];
+    } else {
+      offers = [...state.offers];
+    }    
+
+    return {
+      contract: state.contract,
+      offerCount: state.offerCount,
+      offers: offers,
+      mktIsLoading: state.mktIsLoading
+    };
+  }
+
   if(action.type === 'LOADING') {    
     return {
       contract: state.contract,
@@ -96,6 +121,10 @@ const MarketplaceProvider = props => {
     dispatchMarketplaceAction({type: 'UPDATEOFFER', offerId: offerId});   
   };
 
+  const addOfferHandler = (offer) => {
+    dispatchMarketplaceAction({type: 'ADDOFFER', offer: offer});   
+  };
+
   const setMktIsLoadingHandler = (loading) => {
     dispatchMarketplaceAction({type: 'LOADING', loading: loading});
   };
@@ -109,6 +138,7 @@ const MarketplaceProvider = props => {
     loadOfferCount: loadOfferCountHandler,
     loadOffers: loadOffersHandler,
     updateOffer: updateOfferHandler,
+    addOffer: addOfferHandler,
     setMktIsLoading: setMktIsLoadingHandler
   };
   

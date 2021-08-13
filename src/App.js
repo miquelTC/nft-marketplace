@@ -54,7 +54,6 @@ const App = () => {
         // Event subscription
         nftContract.events.Transfer()
         .on('data', (event) => {
-          console.log('test Transfer');
           collectionCtx.updateCollection(nftContract, event.returnValues.tokenId, event.returnValues.to);
           collectionCtx.setNftIsLoading(false);
         })
@@ -73,12 +72,32 @@ const App = () => {
         // Load offers
         marketplaceCtx.loadOffers(mktContract, offerCount);        
 
-        // Event subscription 
+        // Event OfferFilled subscription 
         mktContract.events.OfferFilled()
         .on('data', (event) => {
-          console.log('test offerFilled');
           marketplaceCtx.updateOffer(event.returnValues.offerId);
           collectionCtx.updateOwner(event.returnValues.id, event.returnValues.newOwner);
+          marketplaceCtx.setMktIsLoading(false);
+        })
+        .on('error', (error) => {
+          console.log(error);
+        });
+
+        // Event Offer subscription 
+        mktContract.events.Offer()
+        .on('data', (event) => {
+          marketplaceCtx.addOffer(event.returnValues);
+          marketplaceCtx.setMktIsLoading(false);
+        })
+        .on('error', (error) => {
+          console.log(error);
+        });
+
+        // Event offerCancelled subscription 
+        mktContract.events.OfferCancelled()
+        .on('data', (event) => {
+          marketplaceCtx.updateOffer(event.returnValues.offerId);
+          collectionCtx.updateOwner(event.returnValues.id, event.returnValues.owner);
           marketplaceCtx.setMktIsLoading(false);
         })
         .on('error', (error) => {
