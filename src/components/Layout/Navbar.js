@@ -1,11 +1,13 @@
 import { useContext } from 'react';
 
 import Web3Context from '../../store/web3-context';
+import MarketplaceContext from '../../store/marketplace-context';
 import web3 from '../../connection/web3';
-//import logo from '../../img/logo.png'
+import { ether, formatPrice } from '../../helpers/utils';
 
 const Navbar = () => {
   const web3Ctx = useContext(Web3Context);
+  const marketplaceCtx = useContext(MarketplaceContext);
   
   const connectWalletHandler = async() => {
     try {
@@ -32,12 +34,17 @@ const Navbar = () => {
   }
   
   return (
-    <nav className="navbar navbar-dark bg-primary p-0">
-      <a className="navbar-brand" href="/#">
-        {/* <img src={logo} width="40" height="40" className="align-center" alt="logo" /> */}
-        mTC - NFT Marketplace
-      </a>
-      <ul className="navbar-nav px-3">
+    <nav className="navbar navbar-expand-sm navbar-light bg-white p-0">      
+      <ul className="navbar-nav ms-auto">
+        <li className="nav-item">
+          <button 
+          type="button" 
+          className="btn btn-info navbar-btn text-white" 
+          onClick={() => console.log(ether(marketplaceCtx.userFunds))}
+          > 
+            {`CLAIM ${formatPrice(marketplaceCtx.userFunds)} ETH`}
+          </button>
+        </li>
         <li className="nav-item">
           {web3Ctx.account && 
             <a 
@@ -51,7 +58,7 @@ const Navbar = () => {
           {!web3Ctx.account && 
             <button 
               type="button" 
-              className="btn btn-outline-light" 
+              className="btn btn-secondary" 
               onClick={connectWalletHandler} 
             > 
               Connect your wallet

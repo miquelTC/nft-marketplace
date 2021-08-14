@@ -32,7 +32,7 @@ const App = () => {
       }
       
       // Load account
-      web3Ctx.loadAccount(web3);
+      const account = await web3Ctx.loadAccount(web3);
 
       // Load Network ID
       const networkId = await web3Ctx.loadNetworkId(web3);
@@ -70,7 +70,10 @@ const App = () => {
         const offerCount = await marketplaceCtx.loadOfferCount(mktContract);
         
         // Load offers
-        marketplaceCtx.loadOffers(mktContract, offerCount);        
+        marketplaceCtx.loadOffers(mktContract, offerCount); 
+        
+        // Load User Funds
+        marketplaceCtx.loadUserFunds(mktContract, account);
 
         // Event OfferFilled subscription 
         mktContract.events.OfferFilled()

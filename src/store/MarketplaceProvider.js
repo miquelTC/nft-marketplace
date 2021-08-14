@@ -6,6 +6,7 @@ const defaultMarketplaceState = {
   contract: null,
   offerCount: null,
   offers: [],
+  userFunds: null,
   mktIsLoading: true
 };
 
@@ -14,7 +15,8 @@ const marketplaceReducer = (state, action) => {
     return {
       contract: action.contract,
       offerCount: state.offerCount,
-      offers: state.offer,
+      offers: state.offers,
+      userFunds: state.userFunds,
       mktIsLoading: state.mktIsLoading
     };
   }
@@ -23,7 +25,8 @@ const marketplaceReducer = (state, action) => {
     return {
       contract: state.contract,
       offerCount: action.offerCount,
-      offers: state.offer,
+      offers: state.offers,
+      userFunds: state.userFunds,
       mktIsLoading: state.mktIsLoading
     };
   }
@@ -33,6 +36,7 @@ const marketplaceReducer = (state, action) => {
       contract: state.contract,
       offerCount: state.offerCount,
       offers: action.offers,
+      userFunds: state.userFunds,
       mktIsLoading: state.mktIsLoading
     };
   }
@@ -44,6 +48,7 @@ const marketplaceReducer = (state, action) => {
       contract: state.contract,
       offerCount: state.offerCount,
       offers: offers,
+      userFunds: state.userFunds,
       mktIsLoading: state.mktIsLoading
     };
   }
@@ -69,6 +74,17 @@ const marketplaceReducer = (state, action) => {
       contract: state.contract,
       offerCount: state.offerCount,
       offers: offers,
+      userFunds: state.userFunds,
+      mktIsLoading: state.mktIsLoading
+    };
+  }
+
+  if(action.type === 'LOADFUNDS') {
+    return {
+      contract: state.contract,
+      offerCount: state.offerCount,
+      offers: state.offers,
+      userFunds: action.userFunds,
       mktIsLoading: state.mktIsLoading
     };
   }
@@ -78,6 +94,7 @@ const marketplaceReducer = (state, action) => {
       contract: state.contract,
       offerCount: state.offerCount,
       offers: state.offers,
+      userFunds: state.userFunds,
       mktIsLoading: action.loading
     };
   }
@@ -125,6 +142,12 @@ const MarketplaceProvider = props => {
     dispatchMarketplaceAction({type: 'ADDOFFER', offer: offer});   
   };
 
+  const loadUserFundsHandler = async(contract, account) => {
+    const userFunds = await contract.methods.userFunds(account).call();
+    dispatchMarketplaceAction({type: 'LOADFUNDS', userFunds: userFunds});
+    return userFunds;
+  };
+
   const setMktIsLoadingHandler = (loading) => {
     dispatchMarketplaceAction({type: 'LOADING', loading: loading});
   };
@@ -133,12 +156,14 @@ const MarketplaceProvider = props => {
     contract: MarketplaceState.contract,
     offerCount: MarketplaceState.offerCount,
     offers: MarketplaceState.offers,
+    userFunds: MarketplaceState.userFunds,
     mktIsLoading: MarketplaceState.mktIsLoading,
     loadContract: loadContractHandler,
     loadOfferCount: loadOfferCountHandler,
     loadOffers: loadOffersHandler,
     updateOffer: updateOfferHandler,
     addOffer: addOfferHandler,
+    loadUserFunds: loadUserFundsHandler,
     setMktIsLoading: setMktIsLoadingHandler
   };
   

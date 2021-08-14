@@ -1,8 +1,10 @@
 import { useContext, useRef, createRef } from 'react';
 
+import web3 from '../../../connection/web3';
 import Web3Context from '../../../store/web3-context';
 import CollectionContext from '../../../store/collection-context';
 import MarketplaceContext from '../../../store/marketplace-context';
+import { formatPrice } from '../../../helpers/utils';
 import eth from '../../../img/eth.png';
 
 const NFTCollection = () => {  
@@ -18,8 +20,7 @@ const NFTCollection = () => {
   const makeOfferHandler = (event, id, key) => {
     event.preventDefault();
 
-    const enteredPrice = priceRefs.current[key].current.value;
-    console.log(enteredPrice)
+    const enteredPrice = web3.utils.toWei(priceRefs.current[key].current.value, 'ether');
 
     collectionCtx.contract.methods.approve(marketplaceCtx.contract.options.address, id).send({ from: web3Ctx.account })
     .on('transactionHash', (hash) => {
@@ -60,9 +61,10 @@ const NFTCollection = () => {
       {collectionCtx.collection.map((NFT, key) => {
         const index = marketplaceCtx.offers ? marketplaceCtx.offers.findIndex(offer => offer.id === NFT.id) : -1;
         const owner = index === -1 ? NFT.owner : marketplaceCtx.offers[index].user;
+        const price = index !== -1 ? formatPrice(marketplaceCtx.offers[index].price).toFixed(2) : null;
 
         return(
-          <div key={key} className="col-md-2 m-3 pb-3 card border-primary">
+          <div key={key} className="col-md-2 m-3 pb-3 card border-info">
             <div className={"card-body"}>       
               <h5 className="card-title">{NFT.title}</h5>
             </div>
@@ -71,27 +73,27 @@ const NFTCollection = () => {
             {index !== -1 ?
               owner !== web3Ctx.account ?
                 <div className="row">
-                  <div className="d-grid gap-2 col-6 mx-auto">
+                  <div className="d-grid gap-2 col-5 mx-auto">
                     <button onClick={buyHandler} value={index} className="btn btn-success">BUY</button>
                   </div>
-                  <div className="col-6 d-flex justify-content-end">
+                  <div className="col-7 d-flex justify-content-end">
                     <img src={eth} width="25" height="25" className="align-center float-start" alt="price icon"></img>                
-                    <p className="text-start"><b>{`${marketplaceCtx.offers[index].price.toFixed(2)}`}</b></p>
+                    <p className="text-start"><b>{`${price}`}</b></p>
                   </div>
                 </div>
               : <div className="row">
-                <div className="d-grid gap-2 col-6 mx-auto">
-                  <button onClick={cancelHandler} value={index} className="btn btn-danger">Cancel</button>
+                <div className="d-grid gap-2 col-5 mx-auto">
+                  <button onClick={cancelHandler} value={index} className="btn btn-danger">CANCEL</button>
                 </div>
-                <div className="col-6 d-flex justify-content-end">
+                <div className="col-7 d-flex justify-content-end">
                   <img src={eth} width="25" height="25" className="align-center float-start" alt="price icon"></img>                
-                  <p className="text-start"><b>{`${marketplaceCtx.offers[index].price.toFixed(2)}`}</b></p>
+                  <p className="text-start"><b>{`${price}`}</b></p>
                 </div>
               </div>
             : owner === web3Ctx.account ?              
               <form className="row g-2" onSubmit={(e) => makeOfferHandler(e, NFT.id, key)}>                
                 <div className="col-5 d-grid gap-2">
-                  <button type="submit" className="btn btn-primary">OFFER</button>
+                  <button type="submit" className="btn btn-secondary">OFFER</button>
                 </div>
                 <div className="col-7">
                   <input

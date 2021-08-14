@@ -116,7 +116,7 @@ const MintForm = () => {
       </div>
       
       {/* {!colorIsValid ? <p className="text-danger"> Please, enter a valid hex color</p> : null} */}
-      <button type='submit' className='btn btn-primary btn-block'>MINT</button>
+      <button type='submit' className='btn btn-lg btn-info text-white btn-block'>MINT</button>
     </form>
   );
 };
