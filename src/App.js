@@ -120,6 +120,7 @@ const App = () => {
     // Metamask Event Subscription - Account changed
     window.ethereum.on('accountsChanged', (accounts) => {
       web3Ctx.loadAccount(web3);
+      marketplaceCtx.loadUserFunds(marketplaceCtx.contract, accounts[0]);
     });
 
     // Metamask Event Subscription - Network changed
