@@ -1,11 +1,13 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 
 import Web3Context from '../../store/web3-context';
 import MarketplaceContext from '../../store/marketplace-context';
 import web3 from '../../connection/web3';
-import { ether, formatPrice } from '../../helpers/utils';
+import { formatPrice } from '../../helpers/utils';
 
 const Navbar = () => {
+  const [fundsLoading, setFundsLoading] = useState(false);
+  
   const web3Ctx = useContext(Web3Context);
   const marketplaceCtx = useContext(MarketplaceContext);
   
@@ -20,6 +22,26 @@ const Navbar = () => {
     // Load accounts
     web3Ctx.loadAccount(web3);
   };
+
+  const claimFundsHandler = () => {
+    marketplaceCtx.contract.methods.claimFunds().send({ from: web3Ctx.account })
+    .on('transactionHash', (hash) => {
+      setFundsLoading(true);
+    })
+    .on('error', (error) => {
+      window.alert('Something went wrong when pushing to the blockchain');
+    });
+  };
+
+  // Event ClaimFunds subscription 
+  marketplaceCtx.contract.events.ClaimFunds()
+  .on('data', (event) => {
+    marketplaceCtx.loadUserFunds(marketplaceCtx.contract, web3Ctx.account);
+    setFundsLoading(false);
+  })
+  .on('error', (error) => {
+    console.log(error);
+  });
 
   let etherscanUrl;
 
@@ -40,9 +62,10 @@ const Navbar = () => {
           <button 
           type="button" 
           className="btn btn-info navbar-btn text-white" 
-          onClick={() => console.log(ether(marketplaceCtx.userFunds))}
+          onClick={claimFundsHandler}
           > 
-            {`CLAIM ${formatPrice(marketplaceCtx.userFunds)} ETH`}
+            {!fundsLoading && `CLAIM ${formatPrice(marketplaceCtx.userFunds)} ETH`}
+            {fundsLoading && 'loading...'}
           </button>
         </li>
         <li className="nav-item">

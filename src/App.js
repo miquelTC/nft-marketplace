@@ -113,27 +113,27 @@ const App = () => {
 
       collectionCtx.setNftIsLoading(false);
       marketplaceCtx.setMktIsLoading(false);
+
+      // Metamask Event Subscription - Account changed
+     window.ethereum.on('accountsChanged', (accounts) => {
+        web3Ctx.loadAccount(web3);
+        marketplaceCtx.loadUserFunds(mktContract, accounts[0]);
+      });
+
+      // Metamask Event Subscription - Network changed
+      window.ethereum.on('chainChanged', (chainId) => {
+        window.location.reload();
+      });
     };
     
     loadBlockchainData();
-    
-    // Metamask Event Subscription - Account changed
-    window.ethereum.on('accountsChanged', (accounts) => {
-      web3Ctx.loadAccount(web3);
-      marketplaceCtx.loadUserFunds(marketplaceCtx.contract, accounts[0]);
-    });
-
-    // Metamask Event Subscription - Network changed
-    window.ethereum.on('chainChanged', (chainId) => {
-      window.location.reload();
-    });
   }, []);
 
   const showContent = web3 && collectionCtx.contract && marketplaceCtx.contract && web3Ctx.account;
   
   return(
     <React.Fragment>
-      <Navbar />
+      {!marketplaceCtx.mktIsLoading && !collectionCtx.nftIsLoading && <Navbar />}
       {showContent && <Main />}
     </React.Fragment>
   );
