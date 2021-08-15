@@ -59,14 +59,19 @@ const Navbar = () => {
     <nav className="navbar navbar-expand-sm navbar-light bg-white p-0">      
       <ul className="navbar-nav ms-auto">
         <li className="nav-item">
-          <button 
-          type="button" 
-          className="btn btn-info navbar-btn text-white" 
-          onClick={claimFundsHandler}
-          > 
-            {!fundsLoading && `CLAIM ${formatPrice(marketplaceCtx.userFunds)} ETH`}
-            {fundsLoading && 'loading...'}
-          </button>
+          {marketplaceCtx.userFunds > 0 && !fundsLoading && <button 
+            type="button" 
+            className="btn btn-info btn-block navbar-btn text-white" 
+            onClick={claimFundsHandler}
+          >          
+            {`CLAIM ${formatPrice(marketplaceCtx.userFunds)} ETH`}
+          </button>}
+          {fundsLoading &&
+            <div class="d-flex justify-content-center text-info">
+              <div class="spinner-border" role="status">
+                <span class="sr-only"></span>
+              </div>
+          </div>}          
         </li>
         <li className="nav-item">
           {web3Ctx.account && 
@@ -81,7 +86,7 @@ const Navbar = () => {
           {!web3Ctx.account && 
             <button 
               type="button" 
-              className="btn btn-secondary" 
+              className="btn btn-info text-white" 
               onClick={connectWalletHandler} 
             > 
               Connect your wallet

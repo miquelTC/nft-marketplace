@@ -9,7 +9,6 @@ import MarketplaceContext from './store/marketplace-context'
 import NFTCollection from './abis/NFTCollection.json';
 import NFTMarketplace from './abis/NFTMarketplace.json';
 
-
 const App = () => {
   const web3Ctx = useContext(Web3Context);
   const collectionCtx = useContext(CollectionContext);
@@ -73,7 +72,7 @@ const App = () => {
         marketplaceCtx.loadOffers(mktContract, offerCount); 
         
         // Load User Funds
-        marketplaceCtx.loadUserFunds(mktContract, account);
+        account && marketplaceCtx.loadUserFunds(mktContract, account);
 
         // Event OfferFilled subscription 
         mktContract.events.OfferFilled()
@@ -115,9 +114,9 @@ const App = () => {
       marketplaceCtx.setMktIsLoading(false);
 
       // Metamask Event Subscription - Account changed
-     window.ethereum.on('accountsChanged', (accounts) => {
+      window.ethereum.on('accountsChanged', (accounts) => {
         web3Ctx.loadAccount(web3);
-        marketplaceCtx.loadUserFunds(mktContract, accounts[0]);
+        accounts[0] && marketplaceCtx.loadUserFunds(mktContract, accounts[0]);
       });
 
       // Metamask Event Subscription - Network changed
@@ -129,11 +128,12 @@ const App = () => {
     loadBlockchainData();
   }, []);
 
+  const showNavbar = web3 && collectionCtx.contract && marketplaceCtx.contract;
   const showContent = web3 && collectionCtx.contract && marketplaceCtx.contract && web3Ctx.account;
   
   return(
     <React.Fragment>
-      {!marketplaceCtx.mktIsLoading && !collectionCtx.nftIsLoading && <Navbar />}
+      {showNavbar && <Navbar />}
       {showContent && <Main />}
     </React.Fragment>
   );
