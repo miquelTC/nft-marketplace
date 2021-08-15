@@ -7,7 +7,7 @@ import MarketplaceContext from '../../../store/marketplace-context';
 import { formatPrice } from '../../../helpers/utils';
 import eth from '../../../img/eth.png';
 
-const NFTCollection = () => {  
+const NFTCollection = () => {
   const web3Ctx = useContext(Web3Context);
   const collectionCtx = useContext(CollectionContext);
   const marketplaceCtx = useContext(MarketplaceContext);
@@ -36,7 +36,7 @@ const NFTCollection = () => {
   };
   
   const buyHandler = (event) => {    
-    const buyIndex = parseInt(event.target.value);
+    const buyIndex = parseInt(event.target.value);      
     marketplaceCtx.contract.methods.fillOffer(marketplaceCtx.offers[buyIndex].offerId).send({ from: web3Ctx.account, value: marketplaceCtx.offers[buyIndex].price })
     .on('transactionHash', (hash) => {
       marketplaceCtx.setMktIsLoading(true);
@@ -44,7 +44,7 @@ const NFTCollection = () => {
     .on('error', (error) => {
       window.alert('Something went wrong when pushing to the blockchain');
       marketplaceCtx.setMktIsLoading(false);
-    });    
+    });            
   };
 
   const cancelHandler = (event) => {    
@@ -100,7 +100,8 @@ const NFTCollection = () => {
                   </div>
                   <div className="col-7">
                     <input
-                      type="text"
+                      type="number"
+                      step="0.01"
                       placeholder="ETH..."
                       className="form-control"
                       ref={priceRefs.current[key]}
