@@ -139,7 +139,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -183,7 +184,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -202,7 +204,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -233,7 +236,8 @@
       "name": "fillOffer",
       "outputs": [],
       "stateMutability": "payable",
-      "type": "function"
+      "type": "function",
+      "payable": true
     },
     {
       "inputs": [
@@ -16198,6 +16202,12 @@
     "version": "0.8.7+commit.e28d00a7.Emscripten.clang"
   },
   "networks": {
+    "4": {
+      "events": {},
+      "links": {},
+      "address": "0x0feFB07BCef45D95d198D2C51050b0A4783C2A80",
+      "transactionHash": "0xe02fb7586f911bc93fc9bc921d9928bc52b4c43c463361e900f550b9d9382224"
+    },
     "5777": {
       "events": {},
       "links": {},
@@ -16206,7 +16216,8 @@
     }
   },
   "schemaVersion": "3.4.1",
-  "updatedAt": "2021-08-15T09:04:22.904Z",
+  "updatedAt": "2021-08-15T16:23:49.146Z",
+  "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
     "methods": {},
