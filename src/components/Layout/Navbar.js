@@ -30,6 +30,7 @@ const Navbar = () => {
     })
     .on('error', (error) => {
       window.alert('Something went wrong when pushing to the blockchain');
+      setFundsLoading(false);
     });
   };
 
@@ -59,13 +60,14 @@ const Navbar = () => {
     <nav className="navbar navbar-expand-sm navbar-light bg-white p-0">      
       <ul className="navbar-nav ms-auto">
         <li className="nav-item">
-          {marketplaceCtx.userFunds > 0 && !fundsLoading && <button 
-            type="button" 
-            className="btn btn-info btn-block navbar-btn text-white" 
-            onClick={claimFundsHandler}
-          >          
-            {`CLAIM ${formatPrice(marketplaceCtx.userFunds)} ETH`}
-          </button>}
+          {marketplaceCtx.userFunds > 0 && !fundsLoading &&
+            <button 
+              type="button" 
+              className="btn btn-info btn-block navbar-btn text-white" 
+              onClick={claimFundsHandler}
+            >          
+              {`CLAIM ${formatPrice(marketplaceCtx.userFunds)} ETH`}
+            </button>}
           {fundsLoading &&
             <div class="d-flex justify-content-center text-info">
               <div class="spinner-border" role="status">

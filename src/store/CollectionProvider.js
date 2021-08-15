@@ -38,7 +38,6 @@ const collectionReducer = (state, action) => {
   }
 
   if(action.type === 'UPDATECOLLECTION') {    
-    // Prevent duplicate NFT if Event triggered twice    
     const index = state.collection.findIndex(NFT => NFT.id === parseInt(action.NFT.id));
     let collection = [];
 
