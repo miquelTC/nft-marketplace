@@ -24,10 +24,10 @@ const NFTCollection = () => {
 
     collectionCtx.contract.methods.approve(marketplaceCtx.contract.options.address, id).send({ from: web3Ctx.account })
     .on('transactionHash', (hash) => {
+      marketplaceCtx.setMktIsLoading(true);
+    })
+    .on('receipt', (receipt) => {      
       marketplaceCtx.contract.methods.makeOffer(id, enteredPrice).send({ from: web3Ctx.account })
-      .on('transactionHash', (hash) => {
-        marketplaceCtx.setMktIsLoading(true);
-      })
       .on('error', (error) => {
         window.alert('Something went wrong when pushing to the blockchain');
         marketplaceCtx.setMktIsLoading(false);
