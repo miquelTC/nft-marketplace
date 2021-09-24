@@ -73,7 +73,7 @@ contract NFTMarketplace {
     userFunds[msg.sender] = 0;    
   }
 
-  // Fallback: reverts if Ether is sent to this smart contract by mistake
+  // Fallback: reverts if Ether is sent to this smart-contract by mistake
   fallback () external {
     revert();
   }
