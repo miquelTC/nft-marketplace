@@ -30,6 +30,7 @@ const App = () => {
         console.error(error);
       }
       
+      
       // Load account
       const account = await web3Ctx.loadAccount(web3);
 
